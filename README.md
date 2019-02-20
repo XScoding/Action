@@ -83,7 +83,7 @@ Action是一个简版的rxjava库，只实现了最简单实用的api，能满�
 ```
 * Action切换线程
 
-onAction指定上一个Actionr的act()执行线程；onExecute指定exec（）执行线程，
+onAction指定上一个Action的act()执行线程；onExecute指定exec（）执行线程，
 且只在exec（）方法前指定线程生效；默认线程都是在主线程中，如果不指定线程就在主线程中执行。
 ```
     new Action<String, Boolean>("teset") {
