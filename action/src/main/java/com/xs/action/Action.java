@@ -185,7 +185,7 @@ public abstract class Action<T, C> {
     /**
      * stop action
      */
-    public void cancel() {
+    private void cancel() {
         cancel = true;
         if (pre != null) {
             pre.cancel();
