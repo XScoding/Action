@@ -34,7 +34,7 @@ public abstract class Action<T, C> {
     /**
      * params
      */
-    private T t;
+    protected T t;
 
     /**
      * constuctor
@@ -185,7 +185,7 @@ public abstract class Action<T, C> {
     /**
      * stop action
      */
-    private void cancel() {
+    protected void cancel() {
         cancel = true;
         if (pre != null) {
             pre.cancel();

@@ -1,122 +1,8 @@
 ### Action（simple rxjava）
   
-我是一名android开发，使用rxjava之后觉得非常好用，逻辑处理和切换线程变的so eazy，
-开发App当然没有什么问题，但开发sdk时rxjava太大了。为了解决这个问题，开始有想法实现
-一个简单的库，最近家里新添小公主一枚，有一个小长假，哈哈，空闲的时候把之前的想法完善一下
-，Action就蛋生了。
-
-#### 介绍
-
-Action是一个简版的rxjava库，只实现了最简单实用的api，能满足大部分使用场景。
-
-* com.xs.action.Action
-* com.xs.action.Call
-* com.xs.action.Func
-* com.xs.action.Scheduler
-* com.xs.action.ThreadPool
-
-###### Action
-核心类，双向链表结构，递归调用核心方法 **act(T t, Call<C> call)**。
-
-* Action创建两种方式
-```
-    new Action<String, Boolean>("入参") {
-        @Override
-        public void act(String s, Call<Boolean> call) {
-            // s : 入参数据
-            // 逻辑处理
-            // success : 继续流程成功回调
-            // fail : 中断流程失败回调
-            // 如果没有加调，中断流程
-            call.success(true);
-            //call.fail(new Exception("error"));
-        }
-    };
-```
-
-```
-入参就是成功回调参数
- Action.create("入参");
-```
-
-* Action转换
-```
-    .map(new Func<String, Boolean>() {
-            @Override
-            public Boolean func(String s) {
-                //逻辑处理
-                return true;
-            }
-        })
-```
-```
-     .flatMap(new Func<String, Action<Boolean, Integer>>() {
-            @Override
-            public Action<Boolean, Integer> func(String s) {
-                //逻辑处理
-                return new Action<Boolean, Integer>(true) {
-                    @Override
-                    public void act(Boolean aBoolean, Call<Integer> call) {
-                        call.success(123)
-                    }
-                };
-            }
-        });
-```
-
-* Action执行
-```
-    Action.Execute<String> exec = Action.create("test")
-            .exec(new Call<String>() {
-                @Override
-                public void success(String s) {
-                    //结果
-                }
-
-                @Override
-                public void fail(Exception e) {
-                    //失败
-                }
-            });
-    //中断流程，在onDestroy中使用
-    exec.cancel();
-```
-* Action切换线程
-
-onAction指定上一个Action的act()执行线程；onExecute指定exec（）执行线程，
-且只在exec（）方法前指定线程生效；默认线程都是在主线程中，如果不指定线程就在主线程中执行。
-```
-    new Action<String, Boolean>("teset") {
-        @Override
-        public void act(String s, Call<Boolean> call) {
-            // 逻辑处理
-            call.success(true);
-            //
-            call.fail(new Exception("error"));
-        }
-    }
-            .onAction(Scheduler.IO)
-            .onExecute(Scheduler.MAIN)
-            .exec(new Call<Boolean>() {
-                @Override
-                public void success(Boolean aBoolean) {
-                    
-                }
-
-                @Override
-                public void fail(Exception e) {
-
-                }
-            });
-```
-###### Call
-Call回调
-###### Func
-Action转换
-###### Scheduler
-线程切换管理，主线程(MAIN)、io线程(IO)、线程池(POOL)。
-###### ThreadPool
-线程池实现
+使用rxjava之后觉得非常好用，逻辑处理和切换线程变的so eazy，开发App当然没有什么问题，
+但开发sdk时rxjava太大了。为了解决这个问题，开始有想法实现一个简单的库，空闲的时候把之
+前的想法完善一下，Action就蛋生了。
 
 #### 使用
 ```
@@ -251,3 +137,117 @@ public class MainActivity extends AppCompatActivity {
 02-20 14:30:23.605 5804-5804/com.xs.action W/xssss: current time:1550644223606  current thread:main  current msg:123456
 02-20 14:30:23.605 5804-5804/com.xs.action W/xssss: current time:1550644223606  current thread:main  current msg:67890
 ```
+
+#### 介绍
+
+Action是一个简版的rxjava库，只实现了最简单实用的api，能满足大部分使用场景。
+
+* com.xs.action.Action
+* com.xs.action.Call
+* com.xs.action.Func
+* com.xs.action.Scheduler
+* com.xs.action.ThreadPool
+
+
+###### Action
+核心类，双向链表结构，递归调用核心方法 **act(T t, Call<C> call)**。
+
+* Action创建两种方式
+```
+    new Action<String, Boolean>("入参") {
+        @Override
+        public void act(String s, Call<Boolean> call) {
+            // s : 入参数据
+            // 逻辑处理
+            // success : 继续流程成功回调
+            // fail : 中断流程失败回调
+            // 如果没有加调，中断流程
+            call.success(true);
+            //call.fail(new Exception("error"));
+        }
+    };
+```
+
+```
+入参就是成功回调参数
+ Action.create("入参");
+```
+
+* Action转换
+```
+    .map(new Func<String, Boolean>() {
+            @Override
+            public Boolean func(String s) {
+                //逻辑处理
+                return true;
+            }
+        })
+```
+```
+     .flatMap(new Func<String, Action<Boolean, Integer>>() {
+            @Override
+            public Action<Boolean, Integer> func(String s) {
+                //逻辑处理
+                return new Action<Boolean, Integer>(true) {
+                    @Override
+                    public void act(Boolean aBoolean, Call<Integer> call) {
+                        call.success(123)
+                    }
+                };
+            }
+        });
+```
+
+* Action执行
+```
+    Action.Execute<String> exec = Action.create("test")
+            .exec(new Call<String>() {
+                @Override
+                public void success(String s) {
+                    //结果
+                }
+
+                @Override
+                public void fail(Exception e) {
+                    //失败
+                }
+            });
+    //中断流程，在onDestroy中使用
+    exec.cancel();
+```
+* Action切换线程
+
+onAction指定上一个Action的act()执行线程；onExecute指定exec（）执行线程，
+且只在exec（）方法前指定线程生效；默认线程都是在主线程中，如果不指定线程就在主线程中执行。
+```
+    new Action<String, Boolean>("teset") {
+        @Override
+        public void act(String s, Call<Boolean> call) {
+            // 逻辑处理
+            call.success(true);
+            //
+            call.fail(new Exception("error"));
+        }
+    }
+            .onAction(Scheduler.IO)
+            .onExecute(Scheduler.MAIN)
+            .exec(new Call<Boolean>() {
+                @Override
+                public void success(Boolean aBoolean) {
+                    
+                }
+
+                @Override
+                public void fail(Exception e) {
+
+                }
+            });
+```
+###### Call
+Call回调
+###### Func
+Action转换
+###### Scheduler
+线程切换管理，主线程(MAIN)、io线程(IO)、线程池(POOL)。
+###### ThreadPool
+线程池实现
