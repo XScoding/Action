@@ -251,3 +251,4 @@ Action转换
 线程切换管理，主线程(MAIN)、io线程(IO)、线程池(POOL)。
 ###### ThreadPool
 线程池实现
+简单
